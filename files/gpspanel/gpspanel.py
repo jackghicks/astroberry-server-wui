@@ -31,6 +31,8 @@ __version__ = '2.0.0'
 
 app = Flask(__name__, static_folder='assets')
 socketio = SocketIO(app)
+socketio.init_app(app, cors_allowed_origins="*")
+
 thread = None
 
 
@@ -227,6 +229,10 @@ def handle_connect():
 	global thread
 	if thread is None:
 		thread = socketio.start_background_task(target=background_thread)
+
+@socketio.on('sync_browser_time')
+def sync_browser_time(json):
+    socketio.emit('time', {'time': time.strftime('%H:%M:%S'), 'json': json})
 
 if __name__ == '__main__':
 	gpsd_socket = gps3.GPSDSocket()

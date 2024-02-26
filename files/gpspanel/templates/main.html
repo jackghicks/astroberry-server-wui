@@ -182,6 +182,11 @@
 			}
 		}
             });
+
+		$('#sync-browser-time').click(function() {
+			socket.emit('sync-browser-time', { test: true });
+		});
+
         });
     </script>
 </head>
@@ -231,6 +236,11 @@
 			<span id="gpsfix_obtained" class="label">Fix</span><span id="gpsfix" class="gpsvalues blink">waiting...</span>
 		</div>
 	</div>
+
+	<div>
+		<button id="sync-time" onclick="syncTime();">Sync Time to Browser</button>
+	</div>
+
 	<script type="text/javascript">
 	function togglemap() {
 			document.getElementById("mapcontainer").style.display="block";
