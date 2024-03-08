@@ -22,7 +22,7 @@ from gevent import monkey; monkey.patch_all()
 from flask import Flask, render_template
 from flask_socketio import SocketIO
 from PIL import Image, ImageDraw
-import time, base64, math, io, sys
+import time, base64, math, io, sys, subprocess
 
 __author__ = 'Radek Kaczorek'
 __copyright__ = 'Copyright 2017  Radek Kaczorek'
@@ -232,7 +232,23 @@ def handle_connect():
 
 @socketio.on('sync_browser_time')
 def sync_browser_time(json):
-    socketio.emit('time', {'time': time.strftime('%H:%M:%S'), 'json': json})
+	# construct the command to set the time
+	timeString = json["timeString"]
+	setTimeCommandString = 'echo "astroberry" | sudo -S date --set="' + timeString + '"'
+
+	print("Running command: " + setTimeCommandString)
+
+	# run the setTimeCommandString on the commandline and collect stderr
+	result = subprocess.run(setTimeCommandString, capture_output=True, text=True, shell=True)
+	stdout = result.stdout
+	stderr = result.stderr
+
+	# emit the time command back to the browser
+	socketio.emit('time', {'command': setTimeCommandString, 'stdout': stdout, 'stderr': stderr})
+
+@socketio.on('sync_browser_gps')
+def sync_browser_time(json):
+	socketio.emit('gps', {'time': time.strftime('%H:%M:%S')})
 
 if __name__ == '__main__':
 	gpsd_socket = gps3.GPSDSocket()

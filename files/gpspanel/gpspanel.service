@@ -4,8 +4,10 @@ After=multi-user.target gpsd.socket
 
 [Service]
 Type=idle
-User=nobody
-ExecStart=/usr/bin/python3 /var/www/gpspanel/gpspanel.py
+User=astroberry
+ExecStart=/usr/bin/python3 -u /var/www/gpspanel/gpspanel.py
+StandardOutput=journal+console
+StandardError=journal+console
 Restart=always
 RestartSec=10
 
